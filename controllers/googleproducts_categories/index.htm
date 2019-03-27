@@ -1,0 +1,11 @@
+<? if ($this->isHintVisible('googleproducts_googlecategory_hint')): ?>
+	<?= Phpr_Form::openTag(array('id'=>'googleproducts_gcategories_form')) ?>
+		<div class="hint">
+			<p class="last">Google Products categories can be assigned to shop categories here or when editing a single category on the <a href="<?= url('/shop/categories/') ?>">Shop/Categories</a> page. Only one Google Products category can be included for each product. In cases when there are two Google Products categories assigned to the same shop category, the one specified on the category page will be used.</p> 
+			<a title="Hide this hint" href="#" class="close" onclick="return hide_tip('googleproducts_googlecategory_hint', this)">Close</a>
+		</div>
+	</form>
+<? endif ?>
+<div id="categories_list">
+		<?= $this->listRender() ?>
+</div>

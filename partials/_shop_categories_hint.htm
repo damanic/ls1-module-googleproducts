@@ -1,0 +1,6 @@
+<? if ($this->isHintVisible('googleproducts_category_hint')): ?>
+	<div class="hint">
+		<p class="last">You can select a Google Products category to be used in the Google Products data feed for products belonging to this category. Categories can also be assigned to Google Products categories on the <a href="<?= url('/googleproducts/categories/') ?>">Google Products/Categories</a> page. Only one Google Products category can be included for each product. In cases when there are two Google Products categories assigned to the same shop category, the one specified here will be used.</p>
+		<a title="Hide this hint" href="#" class="close" onclick="return hide_tip('googleproducts_category_hint', this)">Close</a>
+	</div>
+<? endif ?>

@@ -1,0 +1,37 @@
+<?
+	//$form_model = new Shop_Product();
+	//$this->form_model_class = 'Shop_Product';
+	//$this->resetFormEditSessionKey();
+	
+	$gcategories = $form_model->list_related_records_deferred('googleproducts_categories', $this->formGetEditSessionKey());
+?>
+
+<table class="simpleList">
+	<thead>
+		<tr>
+			<th>Google Category</th>
+			<? if ($gcategories->count): ?>
+				<th class="iconCell last">&nbsp;</th>
+			<? endif ?>
+		</tr>
+	</thead>
+
+	<tbody>
+		<? if (!$gcategories->count): ?>
+			<tr class="noData">
+				<td class="last">There are no google product categories selected.</td>
+			</tr>
+		<? else: ?>
+			<? foreach ($gcategories as $gcategory): 
+				$url = url("/auto/vehicles/edit/".$product->id.'/?'.uniqid());
+			?>
+				<tr class="<?= Backend_Html::zebra('product_gcategories') ?>">
+					<td class="link"><a target="_blank" href="<?= $url ?>"><?= h($product->displayField('make', 'list')) ?></a></td>
+					<td class="link"><a target="_blank" href="<?= $url ?>"><?= h($product->displayField('model', 'list')) ?></a></td>
+					<td class="link"><a target="_blank" href="<?= $url ?>"><?= h($product->displayField('detail', 'list')) ?></a></td>
+					<td class="iconCell last"><a onclick="$('related_vehicle_id').value = '<?= $product->id ?>'; return $(this).getForm().sendPhpr('onCustomEvent', {extraFields: {custom_event_handler: 'auto:onRemoveRelatedVehicle'}, confirm: 'Do you really want to remove this vehicle from the related vehicles list?', update: 'related_vehicle_list', loadIndicator: {show: false}});" title="Remove vehicle" class="deleteDocument" href="#">Remove from the list</a></td>
+				</tr>
+			<? endforeach ?>
+		<? endif ?>
+	</tbody>
+</table>

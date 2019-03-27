@@ -1,0 +1,24 @@
+<h3>Google Products Instructions</h3>
+
+<div class="infoBlock">
+<p class="description">To generate the data feeds with the selected settings, use the following link: <a href="<?= root_url('googleproducts_update_feeds', true) ?>"><?= root_url('googleproducts_update_feeds', true) ?></a>. The generated files are named datafeed_XX.xml where XX is the country code of the target country (AU, BR, CN, FR, DE, IT, JP, NL, ES, CH, GB, US).</p>
+
+<p class="description">To submit a data feed to Google Products Search, visit the <a href="http://www.google.com/merchants/">Google Merchant Center.</a> Enter your tax and shipping settings on the <a href="http://www.google.com/merchants/taxshippingsettings">Tax and Shipping settings</a> page. Then create a new data feed for each target country that you wish to submit your products for and upload the data feed file or schedule automatic uploads. For scheduled uploads it is recommended to set up a cronjob that will generate data feed files prior to the upload.
+In order for Google to accept your submitted products you will also have to verify your website (do so under General settings in Google Merchant Center).</p>
+ 
+<ul>
+	<li>All products have an automatic expiration date set for 30 days after submission. To include them in Google Product Search again, you must resubmit the data feed.</li>
+	
+	<li>There is a limit of 100,000 products per data feed.</li>
+	
+	<li>For all countries except Japan, each product must include an image. Products without an image will not be included in the data feed unless the target country is Japan.</li>
+	
+	<li>Based on the shop category for the product, each product will be assigned a Google Products category. You can assign a desired Google Products category to your shop categories on the <a href="<?= url('/googleproducts/categories') ?>">Google Products categories</a> page.</li>
+	
+	<li>	Google Products category is required for products that belong in one of the following Google Product categories: 	'Apparel & Accessories',	'Apparel & Accessories > Clothing', 	'Apparel & Accessories > Shoes', 	'Media > Books', 	'Media > DVDs & Movies', 	'Media > Music', 	Software > Video Game Software.	</li>
+	
+	<li>All apparel items require the following information: gender, age group, color and size. You can enter these on the Product page on the 'Google Product attributes' tab.</li>
+	
+	<li>If your products fail to include the required information or adhere to <a href="http://www.google.com/support/merchants/bin/answer.py?answer=188484">Google Product Search Policies</a>, all of your products may be suspended from Google Product Search.</li>
+</ul>
+</div>
