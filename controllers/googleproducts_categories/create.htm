@@ -7,17 +7,16 @@
 	<?= flash() ?>
 
 	<? if (!isset($fatalError)): ?>
-		<div class="form600">
+		<div class="form400">
 			<?= Phpr_Form::openTag(array('id'=>'form_element')) ?>
 				<? $this->formRender() ?>
 
-				<?= backend_ajax_button('Save', 'edit_onSave') ?>
-				<?= backend_ajax_button('Cancel', 'edit_onCancel') ?>
-			    <?= backend_ajax_button('Delete', 'edit_onDelete') ?>
-			    <?= backend_ajax_button('Delete', 'edit_onDelete', array('class'=>"right"), "confirm: 'Do you really want to delete this google category?'") ?>
-
-			<div class="clear"></div>
-		</form>
+				<?= backend_ajax_button('Create', 'create_onSave', array('class'=>'default')) ?>
+				<?= backend_ajax_button('Cancel', 'create_onCancel') ?>
+				<input type="hidden" value="1" id="new_record_flag"/>
+			
+				<div class="clear"></div>
+			</form>
 		</div>
 	<? else: ?>
 		<p><a href="<?= url('/googleproducts/categories/') ?>">Return to the categories list</a></p>

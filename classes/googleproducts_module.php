@@ -26,7 +26,7 @@
 			return new Core_ModuleInfo(
 				"Google Products",
 				"Generate LemonStand product feed that can be uploaded to Google Merchant to display your products in Google Shopping results",
-				"Limewheel Creative Inc." );
+				"Limewheel Creative Inc,  MJMAN.NET" );
 		}
 		
 		public function listTabs($tabCollection) {
@@ -100,32 +100,39 @@
 			
 			$product->define_column('x_googleproducts_included', 'Include this product when generating the data feed')->defaultInvisible()->listTitle('Included in GP data feed');
 			$product->define_column('x_googleproducts_description', 'Google Products Description')->defaultInvisible()->listTitle('GP Description');
+
+			$product->define_column('x_googleproducts_promotion_id', 'Promotion ID')->defaultInvisible()->listTitle('Google Promotion ID');
 		}
 		
 		public function extend_product_form($product, $context = null) {
+			$tab_name = 'Google Product Attributes';
 			if($context != 'preview')
 			{
-				$product->add_form_field('x_googleproducts_included')->tab('Google Products attributes')->renderAs(frm_checkbox);
-				$product->add_form_section('The following are used when generating the Google Products data feed. ')->tab('Google Products attributes');
+				$product->add_form_field('x_googleproducts_included')->tab($tab_name)->renderAs(frm_checkbox);
+				$product->add_form_section('The following are used when generating the Google Products data feed. ')->tab($tab_name);
 
-				$product->add_form_field('x_googleproducts_brand', 'left')->tab('Google Products attributes')->comment('Leave empty to use the manufacturer name as the brand.', 'above');	
-				$product->add_form_field('x_googleproducts_mpn', 'right')->tab('Google Products attributes')->comment('If available, enter the manufacturer part number.', 'above');	
+				$product->add_form_field('x_googleproducts_brand', 'left')->tab($tab_name)->comment('Leave empty to use the manufacturer name as the brand.', 'above');
+				$product->add_form_field('x_googleproducts_mpn', 'right')->tab($tab_name)->comment('If available, enter the manufacturer part number.', 'above');
 				
-				$product->add_form_field('x_googleproducts_gtin', 'left')->tab('Google Products attributes')->comment('Enter the UPC, EAN, JAN or ISBN code of the product or leave empty to use the product SKU.', 'above');		
-				$product->add_form_field('x_googleproducts_condition', 'right')->emptyOption('<default>')->tab('Google Products attributes')->renderAs(frm_dropdown)->comment('Required for all products. When left empty "new" will be used.', 'above');
+				$product->add_form_field('x_googleproducts_gtin', 'left')->tab($tab_name)->comment('Enter the UPC, EAN, JAN or ISBN code of the product or leave empty to use the product SKU.', 'above');
+				$product->add_form_field('x_googleproducts_condition', 'right')->emptyOption('<default>')->tab($tab_name)->renderAs(frm_dropdown)->comment('Required for all products. When left empty "new" will be used.', 'above');
 				
 				if ($product->is_new_record())
 					$product->x_googleproducts_id_exists = true;
 					
-				$product->add_form_field('x_googleproducts_id_exists', 'left')->tab('Google Products attributes')->comment('Uncheck the checkbox if the product identifier is required for the product\'s category but don\’t exists.', 'above');
+				$product->add_form_field('x_googleproducts_id_exists', 'left')->tab($tab_name)->comment('Uncheck the checkbox if the product identifier is required for the product\'s category but don\’t exists.', 'above');
 
-				$product->add_form_field('x_googleproducts_description')->tab('Google Products attributes')->comment('Optional. If left empty, the product\'s short description will be used.', 'above');
-				
-				$product->add_form_section('For all products in Apparel category, the following fields are required. They are optional for other products. If left empty, LemonStand will look for attributes with the same names and use those values when generating the product feed.', 'Apparel properties')->tab('Google Products attributes');			
-				$product->add_form_field('x_googleproducts_gender', 'right')->emptyOption('<none>')->tab('Google Products attributes')->comment('Required for all Clothing products.', 'above')->renderAs(frm_dropdown);
-				$product->add_form_field('x_googleproducts_age_group', 'left')->emptyOption('<none>')->tab('Google Products attributes')->comment('Required for all Clothing products.', 'above')->renderAs(frm_dropdown);
-				$product->add_form_field('x_googleproducts_size', 'right')->tab('Google Products attributes')->comment('Required for all Clothing and Shoes products.', 'above');
-				$product->add_form_field('x_googleproducts_color', 'left')->tab('Google Products attributes')->comment('Required for all Clothing & Accessories products.', 'above');
+				$product->add_form_field('x_googleproducts_description')->tab($tab_name)->comment('Optional. If left empty, the product\'s short description will be used.', 'above');
+
+				$product->add_form_section('If you intend to promote this product in a google campaigns, enter a promotion ID', 'Promote')->tab($tab_name);
+				$product->add_form_field('x_googleproducts_promotion_id', 'left')->tab($tab_name)->comment('Unicode characters (Recommended: ASCII only): alphanumeric, underscores, and dashes. 1–50 characters.');
+
+
+				$product->add_form_section('For all products in Apparel category, the following fields are required. They are optional for other products. If left empty, LemonStand will look for attributes with the same names and use those values when generating the product feed.', 'Apparel properties')->tab($tab_name);
+				$product->add_form_field('x_googleproducts_gender', 'right')->emptyOption('<none>')->tab($tab_name)->comment('Required for all Clothing products.', 'above')->renderAs(frm_dropdown);
+				$product->add_form_field('x_googleproducts_age_group', 'left')->emptyOption('<none>')->tab($tab_name)->comment('Required for all Clothing products.', 'above')->renderAs(frm_dropdown);
+				$product->add_form_field('x_googleproducts_size', 'right')->tab($tab_name)->comment('Required for all Clothing and Shoes products.', 'above');
+				$product->add_form_field('x_googleproducts_color', 'left')->tab($tab_name)->comment('Required for all Clothing & Accessories products.', 'above');
 			}
 		}
 		
@@ -303,8 +310,9 @@
 
 			//$product_list = new Shop_Product(null, array('no_column_init' => true, 'no_validation' => true));
 			//$product_list = $product_list->apply_filters()->where('enabled=1')->limit(self::max_products)->order('shop_products.updated_at desc')->find_all();
-			$product_list = Db_DbHelper::objectArray('select sp.id, sp.name, sp.url_name, sp.page_id, sp.short_description, sp.sku, sp.tax_class_id, sp.price, sp.track_inventory, sp.in_stock, sp.stock_alert_threshold, sp.allow_pre_order, sp.x_googleproducts_condition, sp.x_googleproducts_brand, sp.x_googleproducts_id_exists, sp.manufacturer_id, sp.x_googleproducts_description, sp.x_googleproducts_gtin, sp.x_googleproducts_mpn, sp.x_googleproducts_gender,  sp.x_googleproducts_age_group, sp.x_googleproducts_color, sp.x_googleproducts_size, sp.weight, sp.grouped_attribute_name, sp.grouped_option_desc, sp.price_rules_compiled, sp.tier_price_compiled, sp.price_rule_map_compiled, sp.on_sale, sp.sale_price_or_discount, sm. name as manufacturer_name from shop_products sp left join shop_manufacturers sm on (sp.manufacturer_id = sm.id) where enabled is true and (grouped is null or grouped = 0) and x_googleproducts_included is true order by updated_at limit '.self::max_products);
+			$product_list = Db_DbHelper::objectArray('select sp.id, sp.name, sp.url_name, sp.page_id, sp.short_description, sp.sku, sp.tax_class_id, sp.price, sp.track_inventory, sp.in_stock, sp.stock_alert_threshold, sp.allow_pre_order, sp.x_googleproducts_condition, sp.x_googleproducts_brand, sp.x_googleproducts_id_exists, sp.manufacturer_id, sp.x_googleproducts_description, sp.x_googleproducts_gtin, sp.x_googleproducts_mpn, sp.x_googleproducts_gender,  sp.x_googleproducts_age_group, sp.x_googleproducts_color, sp.x_googleproducts_size, sp.weight, sp.grouped_attribute_name, sp.grouped_option_desc, sp.price_rules_compiled, sp.tier_price_compiled, sp.price_rule_map_compiled, sp.on_sale, sp.sale_price_or_discount, sp.x_googleproducts_promotion_id, sm.name as manufacturer_name from shop_products sp left join shop_manufacturers sm on (sp.manufacturer_id = sm.id) where enabled is true and (grouped is null or grouped = 0) and x_googleproducts_included is true order by updated_at limit '.self::max_products);
 
+			traceLog($product_list);
 			foreach($product_list as $product) {
 				if($entry = $this->generate_datafeed_entry($product, $country, $product)) {
 					if($output_xml) echo $entry;
@@ -398,7 +406,6 @@
 				
 				$price = $product->price;
 				$price_no_tax = $price;
-				$sale_price = Shop_Product::eval_static_product_price($this->test_product, $product);
 				$price_with_tax = $this->get_price_with_tax($price, $product->tax_class_id, $country);
 				if($country != 'US') {
 					//all countries except for US require price submitted with tax
@@ -418,7 +425,8 @@
 				$entry .= '<g:price>'.$price.' '.$currency.'</g:price>';
 				
 				//check if there is a sale price on the item
-				$sale_price = round(Shop_Product::eval_static_product_price($this->test_product, $product), 2);
+				$proxy = new Db_ActiverecordProxy( $product->id, 'Shop_Product', $product );
+				$sale_price = $proxy->get_discounted_price();
 				$sale_price_no_tax = $sale_price;
 				
 				if($this->display_prices_incl_tax) $price = $price_with_tax;
@@ -591,7 +599,7 @@
 					//Product contains grouped products that match Google's specification for variants
 					$item_group_id = 'G-'.$product->sku.'_'.$country;
 					//find grouped products and add them to postponed entries
-					$product_list = Db_DbHelper::objectArray('select sp.id, sp.x_googleproducts_id_exists, sp.name, sp.url_name, sp.page_id, sp.short_description, sp.sku, sp.tax_class_id, sp.price, sp.track_inventory, sp.in_stock, sp.stock_alert_threshold, sp.allow_pre_order, sp.x_googleproducts_condition, sp.x_googleproducts_brand, sp.manufacturer_id, sp.x_googleproducts_description, sp.x_googleproducts_gtin, sp.x_googleproducts_mpn, sp.x_googleproducts_gender,  sp.x_googleproducts_age_group, sp.x_googleproducts_color, sp.x_googleproducts_size, sp.weight, :grouped_attribute_name as grouped_attribute_name, sp.grouped_option_desc, sp.price_rules_compiled, sp.tier_price_compiled, sp.price_rule_map_compiled, sp.on_sale, sp.sale_price_or_discount, sm. name as manufacturer_name, :item_group_id as item_group_id from shop_products sp left join shop_manufacturers sm on (sp.manufacturer_id = sm.id) where enabled is true and sp.product_id = :product_id and x_googleproducts_included is true order by updated_at limit '.self::max_products, array('item_group_id' => $item_group_id, 'grouped_attribute_name' => $product->grouped_attribute_name, 'product_id' => $product->id));
+					$product_list = Db_DbHelper::objectArray('select sp.id, sp.x_googleproducts_id_exists, sp.name, sp.url_name, sp.page_id, sp.short_description, sp.sku, sp.tax_class_id, sp.price, sp.track_inventory, sp.in_stock, sp.stock_alert_threshold, sp.allow_pre_order, sp.x_googleproducts_condition, sp.x_googleproducts_brand, sp.manufacturer_id, sp.x_googleproducts_description, sp.x_googleproducts_gtin, sp.x_googleproducts_mpn, sp.x_googleproducts_gender,  sp.x_googleproducts_age_group, sp.x_googleproducts_color, sp.x_googleproducts_size, sp.weight, :grouped_attribute_name as grouped_attribute_name, sp.grouped_option_desc, sp.price_rules_compiled, sp.tier_price_compiled, sp.price_rule_map_compiled, sp.on_sale, sp.sale_price_or_discount, sp.x_googleproducts_promotion_id, sm.name as manufacturer_name, :item_group_id as item_group_id from shop_products sp left join shop_manufacturers sm on (sp.manufacturer_id = sm.id) where enabled is true and sp.product_id = :product_id and x_googleproducts_included is true order by updated_at limit '.self::max_products, array('item_group_id' => $item_group_id, 'grouped_attribute_name' => $product->grouped_attribute_name, 'product_id' => $product->id));
 					foreach($product_list as $grouped_product) {
 						if($grouped_entry = $this->generate_datafeed_entry($grouped_product, $country, $product)) {
 							array_push($this->postponed_entries, $grouped_entry);
@@ -602,6 +610,12 @@
 				}
 				if(isset($product->item_group_id)) {
 					$entry .= '<g:item_group_id>'.$this->cdata_wrap($product->item_group_id).'</g:item_group_id>';
+				}
+
+				traceLog('OPI');
+				traceLog($product->x_googleproducts_promotion_id);
+				if(isset($product->x_googleproducts_promotion_id)) {
+					$entry .= '<g:promotion_id>'.$this->cdata_wrap($product->x_googleproducts_promotion_id).'</g:promotion_id>';
 				}
 				
 				$this->products_count++;
