@@ -312,7 +312,6 @@
 			//$product_list = $product_list->apply_filters()->where('enabled=1')->limit(self::max_products)->order('shop_products.updated_at desc')->find_all();
 			$product_list = Db_DbHelper::objectArray('select sp.id, sp.name, sp.url_name, sp.page_id, sp.short_description, sp.sku, sp.tax_class_id, sp.price, sp.track_inventory, sp.in_stock, sp.stock_alert_threshold, sp.allow_pre_order, sp.x_googleproducts_condition, sp.x_googleproducts_brand, sp.x_googleproducts_id_exists, sp.manufacturer_id, sp.x_googleproducts_description, sp.x_googleproducts_gtin, sp.x_googleproducts_mpn, sp.x_googleproducts_gender,  sp.x_googleproducts_age_group, sp.x_googleproducts_color, sp.x_googleproducts_size, sp.weight, sp.grouped_attribute_name, sp.grouped_option_desc, sp.price_rules_compiled, sp.tier_price_compiled, sp.price_rule_map_compiled, sp.on_sale, sp.sale_price_or_discount, sp.x_googleproducts_promotion_id, sm.name as manufacturer_name from shop_products sp left join shop_manufacturers sm on (sp.manufacturer_id = sm.id) where enabled is true and (grouped is null or grouped = 0) and x_googleproducts_included is true order by updated_at limit '.self::max_products);
 
-			traceLog($product_list);
 			foreach($product_list as $product) {
 				if($entry = $this->generate_datafeed_entry($product, $country, $product)) {
 					if($output_xml) echo $entry;
@@ -426,7 +425,7 @@
 				
 				//check if there is a sale price on the item
 				$proxy = new Db_ActiverecordProxy( $product->id, 'Shop_Product', $product );
-				$sale_price = $proxy->get_discounted_price();
+				$sale_price = $proxy->get_sale_price();
 				$sale_price_no_tax = $sale_price;
 				
 				if($this->display_prices_incl_tax) $price = $price_with_tax;
