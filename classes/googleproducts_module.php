@@ -611,8 +611,6 @@
 					$entry .= '<g:item_group_id>'.$this->cdata_wrap($product->item_group_id).'</g:item_group_id>';
 				}
 
-				traceLog('OPI');
-				traceLog($product->x_googleproducts_promotion_id);
 				if(isset($product->x_googleproducts_promotion_id)) {
 					$entry .= '<g:promotion_id>'.$this->cdata_wrap($product->x_googleproducts_promotion_id).'</g:promotion_id>';
 				}
