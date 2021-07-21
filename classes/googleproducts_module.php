@@ -462,7 +462,7 @@
 					}
 				}
 				
-				if($product->stock_alert_threshold > $product->in_stock) {
+				if($product->track_inventory && ( ($product->stock_alert_threshold > $product->in_stock) ||  ($product->in_stock < 1) )) {
 					if($product->allow_pre_order){
 						$availability = 'preorder';
 					} else {
