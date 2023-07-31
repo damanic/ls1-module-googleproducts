@@ -29,3 +29,4 @@
 #28|1.3.9 Categories update (note: this resets all previous google category assignments)
 #29|1.4.0 Allow for promotion IDs and category create/edit/delete.
 #30|1.4.1 Fixes performance issue on feed gen
+#31|1.4.2 Add trailing slash to product links
