@@ -390,7 +390,7 @@
 				if($parent_product->page_id)
 					$page_url = self::get_theme_product_url($parent_product, $this->params->products_path);
 				else $page_url = $this->params->products_path;
-				$product_url = site_url($page_url.'/'.$url_product->url_name);
+				$product_url = site_url($page_url.'/'.$url_product->url_name.'/');
 				$entry .= '<link>'.$product_url.'</link>';
 				
 				if(strlen($product->x_googleproducts_description))
