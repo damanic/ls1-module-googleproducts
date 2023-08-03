@@ -308,6 +308,15 @@
 				$this->save_datafeed($opening_xml, $filename, $this->params->output_folder);
 			}
 
+            if($this->params->refresh_exchange_rates && ($this->currency->code != $this->currencies[$country])) {
+                if(method_exists('Shop_CurrencyConverter', 'updateRates')){
+                    //force a new rate to be cached for this currency
+                    //reason:  Exchange rates are cached and reused for a limited amount of time (default 24 hours),
+                    //resetting the rate cache when the feed is generated ensures that prices in the feed match the prices shown on the website for as long as possible.
+                    Shop_CurrencyConverter::create()->updateRates($this->currencies[$country], true);
+                }
+            }
+
 			//$product_list = new Shop_Product(null, array('no_column_init' => true, 'no_validation' => true));
 			//$product_list = $product_list->apply_filters()->where('enabled=1')->limit(self::max_products)->order('shop_products.updated_at desc')->find_all();
 			$product_list = Db_DbHelper::objectArray('select sp.id, sp.name, sp.url_name, sp.page_id, sp.short_description, sp.sku, sp.tax_class_id, sp.price, sp.track_inventory, sp.in_stock, sp.stock_alert_threshold, sp.allow_pre_order, sp.x_googleproducts_condition, sp.x_googleproducts_brand, sp.x_googleproducts_id_exists, sp.manufacturer_id, sp.x_googleproducts_description, sp.x_googleproducts_gtin, sp.x_googleproducts_mpn, sp.x_googleproducts_gender,  sp.x_googleproducts_age_group, sp.x_googleproducts_color, sp.x_googleproducts_size, sp.weight, sp.grouped_attribute_name, sp.grouped_option_desc, sp.price_rules_compiled, sp.tier_price_compiled, sp.price_rule_map_compiled, sp.on_sale, sp.sale_price_or_discount, sp.x_googleproducts_promotion_id, sm.name as manufacturer_name from shop_products sp left join shop_manufacturers sm on (sp.manufacturer_id = sm.id) where enabled is true and (grouped is null or grouped = 0) and x_googleproducts_included is true order by updated_at limit '.self::max_products);
@@ -376,7 +385,12 @@
 			if($this->products_count < self::max_products) {
 				if(is_null($parent_product))
 					$parent_product = $product;
-				
+
+                $currencyConversion = false;
+                if($this->currency->code != $this->currencies[$country]) {
+                    $currencyConversion = true;
+                }
+
 				$entry = '
 				<entry>';
 				$entry .= '<title>'.$this->cdata_wrap($product->name).'</title>';
@@ -412,7 +426,7 @@
 				}
 				
 				//correct currency
-				if($this->currency->code != $this->currencies[$country]) {
+				if($currencyConversion) {
 					if(!array_key_exists($country, $this->converter_cache)) {
 						$this->converter_cache[$country] = new Shop_CurrencyConverter();
 					}
@@ -436,7 +450,7 @@
 						$sale_price = $this->get_price_with_tax($sale_price, $product->tax_class_id, $country);
 					}
 					//correct currency
-					if($this->currency->code != $this->currencies[$country]) {
+					if($currencyConversion) {
 						if(!array_key_exists($country, $this->converter_cache)) {
 							$this->converter_cache[$country] = new Shop_CurrencyConverter();
 						}
